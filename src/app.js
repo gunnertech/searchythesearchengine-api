@@ -8,8 +8,6 @@ import favicon      from 'serve-favicon';
 import morgan       from 'morgan';
 
 
-
-import facebook     from './routes/facebook';
 import search     from './routes/search';
 
 
@@ -22,7 +20,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/../public')));
 app.use(morgan('dev'));
 
-app.use('/facebook', facebook);
 app.use('/search', search);
 
 app.use(favicon(__dirname + '/../public/images/favicon.ico'));
