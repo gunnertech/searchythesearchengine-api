@@ -2,9 +2,12 @@ import express from 'express';
 import Promise from 'bluebird';
 import elasticsearch from 'elasticsearch';
 import rp from 'request-promise';
+import fs from 'fs';
 import uuidV1 from 'uuid/v1';
+import path         from 'path';
 
 let router = express.Router();
+let readFile = Promise.promisify(fs.readFile);
 
 router.use((req, res, next) => {
 
@@ -16,8 +19,8 @@ router.use((req, res, next) => {
 });
 
 const esClient = new elasticsearch.Client({
-  host: '127.0.0.1:9200',
-  log: 'error'
+  host: process.env.BONSAI_URL,
+  log: 'trace'
 });
 
 router.get('/bulk-import', (req, res, next) => {
@@ -25,16 +28,26 @@ router.get('/bulk-import', (req, res, next) => {
     uri: 'https://raw.githubusercontent.com/sitepoint-editors/node-elasticsearch-tutorial/master/data.json',
     json: true
   };
-
-  rp(options)
+  // console.log(path.join(__dirname, '/../../data/data1.json'))
+  // rp(options)
+  readFile(path.join(__dirname, '/../../data/data4.json'))
   .then(function (data) {
-    const bulkBody = data.map(item => { return {
-      index: {
-        _index: 'library',
-        _type: 'article',
-        _id: item.id
-      }
-    }});
+    console.log(JSON.parse(data))
+    let bulkBody = [];
+
+    JSON.parse(data).forEach(item => {
+      bulkBody.push({
+        index: {
+          _index: 'library',
+          _type: 'article',
+          _id: item.id
+        }
+      });
+
+      bulkBody.push(item);
+    });
+
+    console.log(bulkBody)
 
     return esClient.bulk({body: bulkBody})
   })
