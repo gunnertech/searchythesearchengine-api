@@ -1,11 +1,14 @@
 {
   "name": "searchythesearchengine",
   "version": "0.0.0",
+  "engines": {
+    "node": "7.4.0"
+  },
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www --exec babel-node",
     "build": "babel src -d build",
-    "serve": "node ./bin/www"
+    "serve": "npm run build; node ./bin/www"
   },
   "dependencies": {
     "bluebird": "^3.4.7",
